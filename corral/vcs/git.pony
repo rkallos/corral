@@ -1,5 +1,4 @@
 use "files"
-use "../regex"
 use "../util"
 
 class val GitVcs is Vcs
@@ -119,22 +118,24 @@ class val GitQueryTags is RepoOperation
       {(ar: ActionResult)(self=this) => self._parse_tags(ar, repo)} iso)
 
   fun val _parse_tags(ar: ActionResult, repo: Repo) =>
+    """
+    Parse local repository references for tags. Valid lines are in the format:
+
+    <HEXADECIMAL SHA-1> refs/tags/<TAG>
+    """
     //ar.print_to(git.env.err)
     let tags = recover Array[String] end
     try
-      let re = Regex("""(\w+)(?: refs/tags/)(\S+)""")?
       for line in ar.stdout.split_by("\n").values() do
         //git.env.err.print("line: " + line)
-        try
-          let matched = re(line)?
-          if matched.size() >= 2 then
-            let tg: String = matched(2)?
-            // TODO: consider stripping 'v' prefix on semver tag
-            tags.push(tg)
-            //git.env.err.print("tag: " + tg)
-            // TODO: consider capturing the hash as well
-          end
-        end
+
+        None // WIP
+        // let tg: String = ""
+        // // TODO: consider stripping 'v' prefix on semver tag
+        // tags.push(tg)
+        // //git.env.err.print("tag: " + tg)
+        // // TODO: consider capturing the hash as well
+
       end
     end
     next(consume tags)
